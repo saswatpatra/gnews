@@ -1,5 +1,6 @@
-import feedparser, json
+import feedparser
 from datetime import datetime
+import os
 
 CATEGORIES = {
     "top": "https://news.google.com/rss",
@@ -9,25 +10,35 @@ CATEGORIES = {
     "science": "https://news.google.com/rss/headlines/section/science"
 }
 
-def fetch_category(name, url):
+def fetch(category, url):
     parsed = feedparser.parse(url)
     return [entry.title for entry in parsed.entries]
 
-def run_bot():
-    output = {
-        "timestamp": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"),
-        "news": {}
-    }
+def build_markdown(results, timestamp):
+    lines = [f"# Google News Update ({timestamp})", ""]
+    for cat, headlines in results.items():
+        lines.append(f"## {cat.capitalize()}")
+        for h in headlines:
+            lines.append(f"- {h}")
+        lines.append("")  # blank line between categories
+    return "\n".join(lines)
 
-    for category, url in CATEGORIES.items():
-        headlines = fetch_category(category, url)
-        output["news"][category] = headlines
+def run():
+    timestamp = datetime.utcnow().strftime("%Y-%m-%d_%H-%M")
+    results = {}
 
-    with open("google_news.json", "w", encoding="utf-8") as f:
-        json.dump(output, f, indent=4, ensure_ascii=False)
+    for cat, url in CATEGORIES.items():
+        results[cat] = fetch(cat, url)
 
-    print("Scraped categories:", ", ".join(CATEGORIES.keys()))
-    print("Saved to google_news.json")
+    md_content = build_markdown(results, timestamp)
+
+    os.makedirs("news", exist_ok=True)
+    filename = f"news/{timestamp}.md"
+
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write(md_content)
+
+    print("Saved:", filename)
 
 if __name__ == "__main__":
-    run_bot()
+    run()

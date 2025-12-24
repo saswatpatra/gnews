@@ -1,0 +1,8 @@
+{
+  "timestamp": "2025-12-25 19:00:00 UTC",
+  "news": {
+    "top": ["Headline1", "Headline2"],
+    "technology": ["Tech news1", "Tech news2"],
+    "sports": ["Sports A", "Sports B"]
+  }
+}

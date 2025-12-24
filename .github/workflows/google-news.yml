@@ -30,6 +30,6 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add google_news.json
-          git commit -m "Update Google News" || echo "No changes"
+          git add news/*.md
+          git commit -m "Add news update" || echo "No changes"
           git push
